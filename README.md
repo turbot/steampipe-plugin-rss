@@ -15,6 +15,10 @@
   </a>
 </p>
 
+## WARNING - DO NOT USE - IN ACTIVE DEVELOPMENT!
+
+This plugin is under development and not ready for use in any meaningful way.
+
 ## Query RSS & Atom Feeds with SQL
 
 Use SQL to query RSS channels and Atom Feeds. For example:
