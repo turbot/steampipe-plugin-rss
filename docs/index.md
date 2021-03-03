@@ -2,7 +2,7 @@
 organization: Turbot
 category: ["media"]
 icon_url: "/images/plugins/turbot/rss.svg"
-brand_color: "#ee802f"
+brand_color: "#FFA500"
 display_name: RSS
 name: rss
 description: Steampipe plugin to query RSS channels & Atom feeds
