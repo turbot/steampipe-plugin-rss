@@ -1,6 +1,6 @@
 # Table: rss_channel
 
-RSS channel or Atom feed information including title, link, description and metadata.
+View RSS channel or Atom feed information including title, link, description and metadata.
 
 Note: It's not possible to list all feeds in the world, so this table requires a
 `feed_link` qualifier to be passed in the where clause for all queries.

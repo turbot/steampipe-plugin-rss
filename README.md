@@ -29,7 +29,9 @@ select
   link,
   description
 from
-  rss_feed;
+  rss_item
+where
+  feed_link = 'https://steampipe.io/blog/feed.xml';
 ```
 
 Learn about [Steampipe](https://steampipe.io/).
