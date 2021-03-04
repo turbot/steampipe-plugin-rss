@@ -1,4 +1,3 @@
-
 <p align="center">
   <h1 align="center">RSS Feed Plugin for Steampipe</h1>
 </p>
@@ -6,18 +5,10 @@
   <a aria-label="Steampipe logo" href="https://steampipe.io">
     <img src="https://steampipe.io/images/steampipe_logo_wordmark_padding.svg" height="28">
   </a>
-  <a aria-label="Plugin version" href="https://hub.steampipe.io/plugins/turbot/rss">
-    <img alt="" src="https://img.shields.io/static/v1?label=turbot/rss&message=None&style=for-the-badge&labelColor=777777&color=F3F1F0">
-  </a>
-  &nbsp;
   <a aria-label="License" href="LICENSE">
     <img alt="" src="https://img.shields.io/static/v1?label=license&message=MPL-2.0&style=for-the-badge&labelColor=777777&color=F3F1F0">
   </a>
 </p>
-
-## WARNING - DO NOT USE - IN ACTIVE DEVELOPMENT!
-
-This plugin is under development and not ready for use in any meaningful way.
 
 ## Query RSS & Atom Feeds with SQL
 
@@ -29,7 +20,9 @@ select
   link,
   description
 from
-  rss_feed;
+  rss_item
+where
+  feed_link = 'https://steampipe.io/blog/feed.xml';
 ```
 
 Learn about [Steampipe](https://steampipe.io/).

@@ -8,7 +8,7 @@ Note: It's not possible to list all feeds in the world, so this table requires a
 
 ## Examples
 
-### Query items from a channel
+### Query items from a channel, newest first
 
 ```sql
 select
@@ -19,6 +19,8 @@ from
   rss_item
 where
   feed_link = 'https://www.hardcorehumanism.com/feed/'
+order by 
+  published desc
 ```
 
 ### Count items by category

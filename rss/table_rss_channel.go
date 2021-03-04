@@ -43,7 +43,7 @@ func tableRSSChannel(ctx context.Context) *plugin.Table {
 	}
 }
 
-func listChannel(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listChannel(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	quals := d.KeyColumnQuals
 	fl := quals["feed_link"].GetStringValue()
 	fp := gofeed.NewParser()
