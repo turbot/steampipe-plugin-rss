@@ -41,7 +41,7 @@ func tableRSSItem(ctx context.Context) *plugin.Table {
 	}
 }
 
-func listItem(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData) (interface{}, error) {
+func listItem(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	quals := d.KeyColumnQuals
 	fl := quals["feed_link"].GetStringValue()
 	fp := gofeed.NewParser()
