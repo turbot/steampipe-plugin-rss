@@ -44,13 +44,17 @@ func tableRSSItem(ctx context.Context) *plugin.Table {
 func listItem(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	quals := d.KeyColumnQuals
 	fl := quals["feed_link"].GetStringValue()
+
 	fp := gofeed.NewParser()
 	feed, err := fp.ParseURLWithContext(fl, ctx)
 	if err != nil {
+		plugin.Logger(ctx).Error("listItem", "Error", err)
 		return nil, err
 	}
+
 	for _, i := range feed.Items {
 		d.StreamListItem(ctx, i)
 	}
+
 	return nil, nil
 }
