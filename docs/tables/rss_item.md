@@ -3,7 +3,7 @@
 Query items from the RSS channel or Atom feed. Item information includes title, link, content, categories and other metadata.
 
 Note: It's not possible to list all feeds in the world, so this table requires a
-`feed_link` qualifier to be passed in the where clause for all queries.
+`feed_link` qualifier to be passed in the `where` or `join` clause for all queries.
 
 
 ## Examples
@@ -20,7 +20,7 @@ from
 where
   feed_link = 'https://www.hardcorehumanism.com/feed/'
 order by 
-  published desc
+  published desc;
 ```
 
 ### Count items by category
@@ -37,5 +37,5 @@ where
 group by
   category
 order by
-  count desc
+  count desc;
 ```
