@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/mmcdole/gofeed v1.1.0
-	github.com/turbot/steampipe-plugin-sdk/v3 v3.3.1
+	github.com/turbot/steampipe-plugin-sdk/v3 v3.3.2
 )
 
 require (
