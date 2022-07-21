@@ -51,11 +51,6 @@ func tableRSSChannel(ctx context.Context) *plugin.Table {
 	}
 }
 
-type Channel struct {
-	gofeed.Feed
-	FeedLink string
-}
-
 func listChannel(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
 	feedLink := d.KeyColumnQuals["feed_link"].GetStringValue()
 	configFeedLinks := GetConfigFeedLink(ctx, d)
@@ -69,7 +64,7 @@ func listChannel(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData
 			plugin.Logger(ctx).Error("listChannel", "Error", err)
 			return nil, err
 		}
-		d.StreamListItem(ctx, Channel{*feed, feedLink})
+		d.StreamListItem(ctx, feed)
 
 		return nil, nil
 	}
@@ -109,6 +104,6 @@ func getChannelDetails(ctx context.Context, d *plugin.QueryData, link string, fp
 		plugin.Logger(ctx).Error("getChannelDetails", "Error", err)
 		return err
 	}
-	d.StreamListItem(ctx, Channel{*feed, link})
+	d.StreamListItem(ctx, feed)
 	return nil
 }
