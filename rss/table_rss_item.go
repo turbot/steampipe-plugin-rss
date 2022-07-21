@@ -2,6 +2,8 @@ package rss
 
 import (
 	"context"
+	"errors"
+	"sync"
 
 	"github.com/mmcdole/gofeed"
 
@@ -15,8 +17,14 @@ func tableRSSItem(ctx context.Context) *plugin.Table {
 		Name:        "rss_item",
 		Description: "An item may represent a story - much like a story in a newspaper or magazine; if so its description is a synopsis of the story, and the link points to the full story.",
 		List: &plugin.ListConfig{
-			KeyColumns: plugin.SingleColumn("feed_link"),
-			Hydrate:    listItem,
+			Hydrate: listItem,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:       "feed_link",
+					Require:    plugin.Optional,
+					CacheMatch: "exact",
+				},
+			},
 		},
 		Columns: []*plugin.Column{
 			// Top columns
@@ -42,19 +50,63 @@ func tableRSSItem(ctx context.Context) *plugin.Table {
 }
 
 func listItem(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	quals := d.KeyColumnQuals
-	fl := quals["feed_link"].GetStringValue()
-
+	feedLink := d.KeyColumnQuals["feed_link"].GetStringValue()
+	configFeedLinks := GetConfigFeedLink(ctx, d)
+	if feedLink == "" && len(configFeedLinks) == 0 {
+		return nil, errors.New("feed link must be provided either in where clause or should be configured as default feed links in the config file")
+	}
 	fp := gofeed.NewParser()
-	feed, err := fp.ParseURLWithContext(fl, ctx)
-	if err != nil {
-		plugin.Logger(ctx).Error("listItem", "Error", err)
+	if feedLink != "" {
+		feed, err := fp.ParseURLWithContext(feedLink, ctx)
+		if err != nil {
+			plugin.Logger(ctx).Error("listItem", "Error", err)
+			return nil, err
+		}
+		for _, item := range feed.Items {
+			d.StreamListItem(ctx, item)
+		}
+
+		return nil, nil
+	}
+	var wg sync.WaitGroup
+	errorCh := make(chan error, len(configFeedLinks))
+	for _, link := range configFeedLinks {
+		wg.Add(1)
+		go getItemAsync(ctx, d, link, fp, &wg, errorCh)
+	}
+
+	// wait for all feed links to be processed
+	wg.Wait()
+
+	// NOTE: close Item before ranging over results
+	close(errorCh)
+
+	for err := range errorCh {
+		// return the first error
 		return nil, err
 	}
 
-	for _, i := range feed.Items {
-		d.StreamListItem(ctx, i)
+	return nil, nil
+}
+
+func getItemAsync(ctx context.Context, d *plugin.QueryData, link string, fp *gofeed.Parser, wg *sync.WaitGroup, errorCh chan error) {
+	defer wg.Done()
+
+	err := getItemDetails(ctx, d, link, fp)
+	if err != nil {
+		errorCh <- err
+	}
+}
+
+func getItemDetails(ctx context.Context, d *plugin.QueryData, link string, fp *gofeed.Parser) error {
+	feed, err := fp.ParseURLWithContext(link, ctx)
+	if err != nil {
+		plugin.Logger(ctx).Error("getItemDetails", "Error", err)
+		return err
+	}
+	for _, item := range feed.Items {
+		d.StreamListItem(ctx, item)
 	}
 
-	return nil, nil
+	return nil
 }

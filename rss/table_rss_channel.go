@@ -2,6 +2,8 @@ package rss
 
 import (
 	"context"
+	"errors"
+	"sync"
 
 	"github.com/mmcdole/gofeed"
 
@@ -15,8 +17,14 @@ func tableRSSChannel(ctx context.Context) *plugin.Table {
 		Name:        "rss_channel",
 		Description: "Information about the RSS channel or Atom feed.",
 		List: &plugin.ListConfig{
-			KeyColumns: plugin.SingleColumn("feed_link"),
-			Hydrate:    listChannel,
+			Hydrate: listChannel,
+			KeyColumns: []*plugin.KeyColumn{
+				{
+					Name:       "feed_link",
+					Require:    plugin.Optional,
+					CacheMatch: "exact",
+				},
+			},
 		},
 		Columns: []*plugin.Column{
 			// Top columns
@@ -44,13 +52,58 @@ func tableRSSChannel(ctx context.Context) *plugin.Table {
 }
 
 func listChannel(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	quals := d.KeyColumnQuals
-	fl := quals["feed_link"].GetStringValue()
+	feedLink := d.KeyColumnQuals["feed_link"].GetStringValue()
+	configFeedLinks := GetConfigFeedLink(ctx, d)
+	if feedLink == "" && len(configFeedLinks) == 0 {
+		return nil, errors.New("feed link must be provided either in where clause or should be configured as default feed links in the config file")
+	}
 	fp := gofeed.NewParser()
-	feed, err := fp.ParseURLWithContext(fl, ctx)
-	if err != nil {
+	if feedLink != "" {
+		feed, err := fp.ParseURLWithContext(feedLink, ctx)
+		if err != nil {
+			plugin.Logger(ctx).Error("listChannel", "Error", err)
+			return nil, err
+		}
+		d.StreamListItem(ctx, feed)
+
+		return nil, nil
+	}
+	var wg sync.WaitGroup
+	errorCh := make(chan error, len(configFeedLinks))
+	for _, link := range configFeedLinks {
+		wg.Add(1)
+		go getChannelAsync(ctx, d, link, fp, &wg, errorCh)
+	}
+
+	// wait for all feed links to be processed
+	wg.Wait()
+
+	// NOTE: close channel before ranging over results
+	close(errorCh)
+
+	for err := range errorCh {
+		// return the first error
 		return nil, err
 	}
-	d.StreamListItem(ctx, feed)
+
 	return nil, nil
+}
+
+func getChannelAsync(ctx context.Context, d *plugin.QueryData, link string, fp *gofeed.Parser, wg *sync.WaitGroup, errorCh chan error) {
+	defer wg.Done()
+
+	err := getChannelDetails(ctx, d, link, fp)
+	if err != nil {
+		errorCh <- err
+	}
+}
+
+func getChannelDetails(ctx context.Context, d *plugin.QueryData, link string, fp *gofeed.Parser) error {
+	feed, err := fp.ParseURLWithContext(link, ctx)
+	if err != nil {
+		plugin.Logger(ctx).Error("getChannelDetails", "Error", err)
+		return err
+	}
+	d.StreamListItem(ctx, feed)
+	return nil
 }

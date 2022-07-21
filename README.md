@@ -17,6 +17,14 @@ Install the plugin with [Steampipe](https://steampipe.io):
 steampipe plugin install rss
 ```
 
+Configure your [config file](https://hub.steampipe.io/plugins/turbot/csv#configuration) to include default feed links. Feed link must be provided either in where clause or should be configured as default feed links in the config file.
+
+Run steampipe:
+
+```shell
+steampipe query
+```
+
 Run a query:
 
 ```sql
