@@ -39,7 +39,7 @@ func tableRSSItem(ctx context.Context) *plugin.Table {
 			{Name: "description", Type: proto.ColumnType_STRING, Description: "The item synopsis."},
 			{Name: "enclosures", Type: proto.ColumnType_JSON, Description: "Media objects attached to the item."},
 			{Name: "extensions", Type: proto.ColumnType_JSON, Description: "Extension data (e.g. Dublin Core, ITunes) for the item."},
-			{Name: "feed_link", Type: proto.ColumnType_STRING, Hydrate: feedLink, Transform: transform.FromValue(), Description: "URL of the feed itself."},
+			{Name: "feed_link", Type: proto.ColumnType_STRING, Description: "URL of the feed itself."},
 			{Name: "guid", Type: proto.ColumnType_STRING, Description: "A string that uniquely identifies the item."},
 			{Name: "image_title", Type: proto.ColumnType_STRING, Transform: transform.FromField("Image.Title"), Description: ""},
 			{Name: "image_url", Type: proto.ColumnType_STRING, Transform: transform.FromField("Image.URL"), Description: ""},
@@ -47,6 +47,11 @@ func tableRSSItem(ctx context.Context) *plugin.Table {
 			{Name: "updated", Type: proto.ColumnType_TIMESTAMP, Transform: transform.FromField("UpdatedParsed"), Description: "Timestamp when the feed was updated."},
 		},
 	}
+}
+
+type Item struct {
+	gofeed.Item
+	FeedLink string
 }
 
 func listItem(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
@@ -63,7 +68,7 @@ func listItem(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (
 			return nil, err
 		}
 		for _, item := range feed.Items {
-			d.StreamListItem(ctx, item)
+			d.StreamListItem(ctx, Item{*item, feedLink})
 		}
 
 		return nil, nil
@@ -105,7 +110,7 @@ func getItemDetails(ctx context.Context, d *plugin.QueryData, link string, fp *g
 		return err
 	}
 	for _, item := range feed.Items {
-		d.StreamListItem(ctx, item)
+		d.StreamListItem(ctx, Item{*item, link})
 	}
 
 	return nil
