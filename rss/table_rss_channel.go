@@ -5,9 +5,9 @@ import (
 
 	"github.com/mmcdole/gofeed"
 
-	"github.com/turbot/steampipe-plugin-sdk/v4/grpc/proto"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v4/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 )
 
 func tableRSSChannel(ctx context.Context) *plugin.Table {
@@ -44,7 +44,7 @@ func tableRSSChannel(ctx context.Context) *plugin.Table {
 }
 
 func listChannel(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
-	quals := d.KeyColumnQuals
+	quals := d.EqualsQuals
 	fl := quals["feed_link"].GetStringValue()
 	fp := gofeed.NewParser()
 	feed, err := fp.ParseURLWithContext(fl, ctx)
