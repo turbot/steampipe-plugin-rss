@@ -10,6 +10,7 @@ import (
 func Plugin(ctx context.Context) *plugin.Plugin {
 	p := &plugin.Plugin{
 		Name:             "steampipe-plugin-rss",
+		DefaultShouldIgnoreError: isNotFoundError([]string{"403","404","500"}),
 		DefaultTransform: transform.FromGo().NullIfZero(),
 		TableMap: map[string]*plugin.Table{
 			"rss_channel": tableRSSChannel(ctx),
