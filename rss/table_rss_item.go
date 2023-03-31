@@ -2,6 +2,7 @@ package rss
 
 import (
 	"context"
+	"strings"
 
 	"github.com/mmcdole/gofeed"
 
@@ -49,7 +50,12 @@ func listItem(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (
 	feed, err := fp.ParseURLWithContext(fl, ctx)
 	if err != nil {
 		plugin.Logger(ctx).Error("listItem", "Error", err)
-		return nil, err
+		if strings.Contains(err.Error(), "x509: certificate") {
+			// Return an empty array of items
+			return []gofeed.Item{}, nil
+		} else {
+			return nil, err
+		}
 	}
 
 	for _, i := range feed.Items {
