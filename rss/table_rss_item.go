@@ -50,7 +50,7 @@ func listItem(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (
 	feed, err := fp.ParseURLWithContext(fl, ctx)
 	if err != nil {
 		plugin.Logger(ctx).Error("listItem", "Error", err)
-		if strings.Contains(err.Error(), "x509: certificate") {
+		if strings.Contains(err.Error(), "x509: certificate has expired or is not yet valid") {
 			// Return an empty array of items
 			return []gofeed.Item{}, nil
 		} else {
