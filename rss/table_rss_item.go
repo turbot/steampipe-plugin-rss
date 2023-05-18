@@ -43,13 +43,15 @@ func tableRSSItem(ctx context.Context) *plugin.Table {
 }
 
 func listItem(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
 	quals := d.EqualsQuals
 	fl := quals["feed_link"].GetStringValue()
 
 	fp := gofeed.NewParser()
 	feed, err := fp.ParseURLWithContext(fl, ctx)
+	logger.Debug(err.Error())
 	if err != nil {
-		plugin.Logger(ctx).Error("listItem", "Error", err)
+		logger.Error("table_rss_item.listItem", "Error", err)
 		if strings.Contains(err.Error(), "x509: certificate has expired or is not yet valid") {
 			// Return an empty array of items
 			return []gofeed.Item{}, nil
