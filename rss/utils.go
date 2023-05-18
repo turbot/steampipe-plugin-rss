@@ -24,3 +24,13 @@ func isNotFoundError(notFoundErrors []string) plugin.ErrorPredicate {
 		return false
 	}
 }
+
+func handleFeedError(err error) bool {
+	errorStrings := []string{"x509: certificate has expired or is not yet valid", "502"}
+	for _, s := range errorStrings {
+			if strings.Contains(err.Error(), s) {
+					return true
+			}
+	}
+	return false
+}

@@ -2,7 +2,6 @@ package rss
 
 import (
 	"context"
-	"strings"
 
 	"github.com/mmcdole/gofeed"
 
@@ -49,12 +48,10 @@ func listItem(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (
 
 	fp := gofeed.NewParser()
 	feed, err := fp.ParseURLWithContext(fl, ctx)
-	logger.Debug(err.Error())
 	if err != nil {
 		logger.Error("table_rss_item.listItem", "Error", err)
-		if strings.Contains(err.Error(), "x509: certificate has expired or is not yet valid") {
-			// Return an empty array of items
-			return []gofeed.Item{}, nil
+		if handleFeedError(err) {
+       return []gofeed.Item{}, nil
 		} else {
 			return nil, err
 		}

@@ -44,12 +44,18 @@ func tableRSSChannel(ctx context.Context) *plugin.Table {
 }
 
 func listChannel(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+	logger := plugin.Logger(ctx)
 	quals := d.EqualsQuals
 	fl := quals["feed_link"].GetStringValue()
 	fp := gofeed.NewParser()
 	feed, err := fp.ParseURLWithContext(fl, ctx)
 	if err != nil {
-		return nil, err
+		logger.Error("table_rss_channel.listChannel", "Error", err)
+		if handleFeedError(err) {
+       return []gofeed.Item{}, nil
+		} else {
+			return nil, err
+		}
 	}
 	d.StreamListItem(ctx, feed)
 	return nil, nil
