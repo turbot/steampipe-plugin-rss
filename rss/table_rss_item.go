@@ -17,6 +17,9 @@ func tableRSSItem(ctx context.Context) *plugin.Table {
 		List: &plugin.ListConfig{
 			KeyColumns: plugin.SingleColumn("feed_link"),
 			Hydrate:    listItem,
+			IgnoreConfig: &plugin.IgnoreConfig{
+				ShouldIgnoreErrorFunc: shouldIgnoreErrors([]string{"403", "404"}),
+		  },
 		},
 		Columns: []*plugin.Column{
 			// Top columns

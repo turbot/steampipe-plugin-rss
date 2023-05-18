@@ -17,6 +17,9 @@ func tableRSSChannel(ctx context.Context) *plugin.Table {
 		List: &plugin.ListConfig{
 			KeyColumns: plugin.SingleColumn("feed_link"),
 			Hydrate:    listChannel,
+			IgnoreConfig: &plugin.IgnoreConfig{
+				ShouldIgnoreErrorFunc: shouldIgnoreErrors([]string{"403", "404"}),
+		  },
 		},
 		Columns: []*plugin.Column{
 			// Top columns

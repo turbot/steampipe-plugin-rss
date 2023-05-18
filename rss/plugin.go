@@ -15,7 +15,6 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"rss_channel": tableRSSChannel(ctx),
 			"rss_item":    tableRSSItem(ctx),
 		},
-		DefaultShouldIgnoreError: isNotFoundError([]string{"403","404"}),
 	}
 	return p
 }
