@@ -11,6 +11,9 @@ An RSS Feed Item is an individual content piece from an RSS feed. These items co
 
 The `rss_item` table provides insights into individual items within an RSS feed. As a content manager or data analyst, explore item-specific details through this table, including content, metadata, and associated links. Utilize it to uncover information about items, such as their publishing timeline, authorship details, and categorization.
 
+**Important Notes**
+- It's not possible to list all feeds in the world, so this table requires a `feed_link` qualifier to be passed in the `where` or `join` clause for all queries.
+
 ## Examples
 
 ### Query items from a channel, newest first
@@ -25,7 +28,7 @@ from
   rss_item
 where
   feed_link = 'https://www.hardcorehumanism.com/feed/'
-order by 
+order by
   published desc;
 ```
 

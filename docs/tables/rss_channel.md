@@ -11,6 +11,9 @@ RSS (Really Simple Syndication) Channel is a web feed that allows users to acces
 
 The `rss_channel` table provides insights into RSS channels across various websites. As a content manager or a web developer, explore channel-specific details through this table, including title, description, link, language, and copyright. Utilize it to monitor the updates of different websites in an automated and efficient manner.
 
+**Important Notes**
+- It's not possible to list all feeds in the world, so this table requires a `feed_link` qualifier to be passed in the `where` or `join` clause for all queries.
+
 ## Examples
 
 ### Basic channel info
@@ -38,7 +41,7 @@ select
 from
   rss_channel
 where
-  feed_link in ('https://steampipe.io/blog/feed.xml','https://www.podcastinsights.com/feed/'); 
+  feed_link in ('https://steampipe.io/blog/feed.xml','https://www.podcastinsights.com/feed/');
 ```
 
 ### Get the type of the channel
