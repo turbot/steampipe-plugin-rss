@@ -19,7 +19,7 @@ The `rss_item` table provides insights into individual items within an RSS feed.
 ### Query items from a channel, newest first
 Explore the latest items from a specific RSS feed to stay updated with the most recent content. This is especially useful for keeping track of the latest updates on frequently updated websites or blogs.
 
-```sql
+```sql+postgres
 select
   title,
   published,
@@ -32,10 +32,23 @@ order by
   published desc;
 ```
 
+```sql+sqlite
+select
+  title,
+  published,
+  link
+from
+  rss_item
+where
+  feed_link = 'https://www.hardcorehumanism.com/feed/'
+order by 
+  published desc;
+```
+
 ### Count items by category
 Explore the distribution of podcast topics from a specific feed. This query helps you understand the most frequent themes or categories in the chosen podcast, providing insights into its content focus.
 
-```sql
+```sql+postgres
 select
   category,
   count(*)
@@ -48,4 +61,19 @@ group by
   category
 order by
   count desc;
+```
+
+```sql+sqlite
+select
+  category,
+  count(*)
+from
+  rss_item,
+  json_each(categories) as category
+where
+  feed_link = 'https://www.podcastinsights.com/feed/'
+group by
+  category.value
+order by
+  count(*) desc;
 ```
