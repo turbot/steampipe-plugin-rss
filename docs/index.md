@@ -8,6 +8,7 @@ name: rss
 description: Steampipe plugin to query RSS channels & Atom feeds
 og_description: "Query RSS with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/rss-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # RSS
