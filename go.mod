@@ -3,7 +3,7 @@ module github.com/turbot/steampipe-plugin-rss
 go 1.21
 
 require (
-	github.com/mmcdole/gofeed v1.1.0
+	github.com/mmcdole/gofeed v1.3.0
 	github.com/turbot/steampipe-plugin-sdk/v5 v5.8.0
 )
 
