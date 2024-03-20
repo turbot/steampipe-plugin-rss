@@ -1,3 +1,9 @@
+## v0.7.0 [2024-03-20]
+
+_Enhancements_
+
+- Recompiled plugin with [mmcdole/gofeed v1.3.0](https://github.com/mmcdole/gofeed). ([#50](https://github.com/turbot/steampipe-plugin-rss/pull/50))
+
 ## v0.6.0 [2023-12-12]
 
 _What's new?_
